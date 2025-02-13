@@ -17,6 +17,7 @@ const Billing = ({ isCollapsed }) => {
     paymentMethod: "cash",
   });
   const [invoices, setInvoices] = useState([]);
+  const token = localStorage.getItem("token"); // Retrieve the JWT token
 
   useEffect(() => {
     fetchInvoices();
@@ -24,11 +25,30 @@ const Billing = ({ isCollapsed }) => {
 
   const fetchInvoices = async () => {
     try {
-      const response = await axios.get("http://localhost:5010/api/invoices");
+      const response = await axios.get("http://localhost:5010/api/invoices", {
+        headers: {
+          // Include the token in the Authorization header (with Bearer prefix)
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setInvoices(response.data);
     } catch (error) {
       console.error("Error fetching invoices:", error);
     }
+  };
+  const deleteInvoice = (invoiceId) => {
+    if (!window.confirm("Are you sure you want to delete this invoice?")) return;
+
+    fetch(`http://localhost:5010/api/invoices/${invoiceId}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then(() => {
+        alert("Invoice deleted successfully!");
+        fetchInvoices(); // Refresh the invoice list
+      })
+      .catch((error) => console.error("Error:", error));
   };
 
   const calculateTotal = (quantity, price, tax, discount) => {
@@ -58,10 +78,20 @@ const Billing = ({ isCollapsed }) => {
   // Save invoice to api
   const saveInvoiceToAPI = async (invoiceData) => {
     try {
-      // Replace with your actual API endpoint
-      const response = await axios.post("http://localhost:5010/api/invoices", invoiceData);
-      // Optionally, use response.data if your API returns the saved invoice
+      const token = localStorage.getItem("token"); // Retrieve JWT token
+  
+      const response = await axios.post(
+        "http://localhost:5010/api/invoices",
+        invoiceData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include token in headers
+          },
+        }
+      );
+  
       return response.data;
+       // Return saved invoice from response
     } catch (error) {
       console.error("Error saving invoice to API:", error);
       throw error;
@@ -72,6 +102,7 @@ const Billing = ({ isCollapsed }) => {
     try {
       // Save the invoice to the backend
       const savedInvoice = await saveInvoiceToAPI(invoice);
+      window.location.reload();
       // Update local state with the saved invoice
       setBills([...bills, savedInvoice]);
       // Optionally, you can show a success message to the user here
@@ -330,9 +361,9 @@ const Billing = ({ isCollapsed }) => {
     Medical Invoices
   </h2>
   
-  {bills.length > 0 ? (
+  {invoices.length > 0 ? (
     <div className="space-y-6">
-      {bills.map((bill, index) => (
+      {invoices.map((bill, index) => (
         <div
           key={index}
           className="p-6 border-l-4 border-indigo-500 rounded-lg bg-white shadow-md hover:shadow-lg transition-shadow duration-200"
@@ -385,8 +416,9 @@ const Billing = ({ isCollapsed }) => {
             </div>
             <div className="flex space-x-3">
               <button
-                onClick={() => handleDeleteBill(index)}
-                className="flex items-center text-red-500 hover:text-red-700 transition-colors"
+                onClick={() => deleteInvoice(bill._id)}
+                cursor="pointer"
+                className="flex items-center p-2 rounded-lg cursor-pointer text-red-500 hover:text-red-700 hover:bg-red-100 transition-colors"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -395,7 +427,8 @@ const Billing = ({ isCollapsed }) => {
               </button>
               <button
   onClick={() => handlePrintInvoice(bill, index)}
-  className="bg-gradient-to-r from-indigo-500 to-blue-600 text-white px-4 py-2 rounded-lg hover:shadow-md transition-all flex items-center"
+  
+  className="bg-gradient-to-r cursor-pointer from-indigo-500 to-blue-600 text-white px-4 py-2 rounded-lg hover:shadow-md transition-all flex items-center"
 >
   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
@@ -418,75 +451,6 @@ const Billing = ({ isCollapsed }) => {
     </div>
   )}
 </div>
-<div className="p-6  rounded-2xl shadow-lg">
-      <h2 className="text-xl font-bold mb-6 text-indigo-500 flex items-center">
-        
-        Invoices
-      </h2>
-
-      {invoices.length === 0 ? (
-        <div className="flex flex-col items-center justify-center p-10 bg-white rounded-lg shadow-md text-gray-700">
-          <svg className="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-3-3v6m-7-7a9 9 0 1118 0 9 9 0 01-18 0z"></path>
-          </svg>
-          <p className="text-lg font-semibold">No invoices found</p>
-          <p className="text-sm text-gray-500">Create an invoice to get started</p>
-        </div>
-      ) : (
-        <div className="overflow-x-auto bg-white rounded-lg shadow-md">
-          <table className="w-full border border-gray-300 rounded-lg">
-            <thead>
-              <tr className="bg-indigo-600 text-white uppercase text-sm">
-                <th className="border border-gray-300 px-4 py-3">Invoice ID</th>
-                <th className="border border-gray-300 px-4 py-3">Medicine</th>
-                <th className="border border-gray-300 px-4 py-3">Quantity</th>
-                <th className="border border-gray-300 px-4 py-3">Price</th>
-                <th className="border border-gray-300 px-4 py-3">Tax</th>
-                <th className="border border-gray-300 px-4 py-3">Discount</th>
-                <th className="border border-gray-300 px-4 py-3">Total</th>
-                <th className="border border-gray-300 px-4 py-3">Payment</th>
-                <th className="border border-gray-300 px-4 py-3">Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {invoices.map((invoice, index) => (
-                <tr key={invoice._id} className="hover:bg-gray-100 transition duration-300 text-gray-700">
-                  <td className="border border-gray-300 px-4 py-3 font-semibold text-indigo-600">
-                    MED{String(index + 1).padStart(3, "0")}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-3">{invoice.medicine}</td>
-                  <td className="border border-gray-300 px-4 py-3">{invoice.quantity}</td>
-                  <td className="border border-gray-300 px-4 py-3">{"\u20B9"} {invoice.price.toFixed(2)}</td>
-                  <td className="border border-gray-300 px-4 py-3">{"\u20B9"} {invoice.tax.toFixed(2)}</td>
-                  <td className="border border-gray-300 px-4 py-3">{"\u20B9"} {invoice.discount.toFixed(2)}</td>
-                  <td className="border border-gray-300 px-4 py-3 font-bold">{"\u20B9"}{invoice.total.toFixed(2)}</td>
-                  <td className="border border-gray-300 px-4 py-3">
-                    <span
-                      className={`px-3 py-1 text-xs font-semibold rounded-full ${
-                        invoice.paymentMethod === "Paid"
-                          ? "bg-green-200 text-green-700"
-                          : "bg-red-200 text-red-700"
-                      }`}
-                    >
-                      {invoice.paymentMethod}
-                    </span>
-                  </td>
-                  <td className="border border-gray-300 px-4 py-3">
-                  {new Date(invoice.createdAt).toLocaleDateString("en-IN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  })}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
-
-
     </div>
   );
 };

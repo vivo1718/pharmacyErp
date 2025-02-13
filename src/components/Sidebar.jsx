@@ -1,5 +1,8 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 const Sidebar = ({ isCollapsed, toggleSidebar }) => {
+  const location = useLocation();
+  const isActive = (path) => location.pathname.startsWith(path);
+  
   return (
     <div
       className={`${
@@ -7,21 +10,26 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
       } bg-gradient-to-b from-gray-900 to-gray-800 text-gray-100 h-screen border-r border-gray-700 fixed transition-all duration-300 ease-in-out flex flex-col`}
     >
       {/* Sidebar Header */}
-      <div className="p-4 flex items-center justify-between">
-        <h1 className={`text-xl font-bold text-indigo-500 uppercase tracking-wide transition-all ${isCollapsed ? "hidden" : "block"}`}>
+      <div className="p-4 flex items-center justify-between ">
+      <div className="flex justify-center text-center  "><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="size-6 text-center justify-center text-indigo-500">
+  <path strokeLinecap="round" strokeLinejoin="round" d="M4.098 19.902a3.75 3.75 0 0 0 5.304 0l6.401-6.402M6.75 21A3.75 3.75 0 0 1 3 17.25V4.125C3 3.504 3.504 3 4.125 3h5.25c.621 0 1.125.504 1.125 1.125v4.072M6.75 21a3.75 3.75 0 0 0 3.75-3.75V8.197M6.75 21h13.125c.621 0 1.125-.504 1.125-1.125v-5.25c0-.621-.504-1.125-1.125-1.125h-4.072M10.5 8.197l2.88-2.88c.438-.439 1.15-.439 1.59 0l3.712 3.713c.44.44.44 1.152 0 1.59l-2.879 2.88M6.75 17.25h.008v.008H6.75v-.008Z" />
+</svg>
+<h1 className={`text-xl font-bold text-indigo-500 ml-0.5  tracking-wide transition-all ${isCollapsed ? "hidden" : "block mr-0.5"}`}>
           PharmaERP
         </h1>
+</div>
+        
         {/* Toggle Button */}
         <button
           onClick={toggleSidebar}
-          className="text-gray-300 hover:text-indigo-400 hover:bg-gray-700 rounded-lg p-2 transition duration-200"
+          className="text-indigo-600 font-bold hover:text-indigo-400 hover:bg-gray-700 rounded-lg p-2 transition duration-200"
         >
           {isCollapsed ? (
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="size-6">
               <path strokeLinecap="round" strokeLinejoin="round" d="m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5" />
             </svg>
           ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="size-6">
               <path strokeLinecap="round" strokeLinejoin="round" d="m18.75 4.5-7.5 7.5 7.5 7.5m-6-15L5.25 12l7.5 7.5" />
             </svg>
           )}
@@ -29,7 +37,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
       </div>
 
       {/* Navigation Links */}
-      <nav className="space-y-2   flex-1 align-middle ">
+      <nav className="space-y-2 mt-4   flex-1 align-middle ">
         {[
           { to: "/dashboard", icon: "m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25", label: "Dashboard" },
           { to: "/inventory", icon: "m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0-3-3m3 3 3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z", label: "Inventory" },
@@ -41,7 +49,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
             key={index}
             title={item.label}
             to={item.to}
-            className="flex  gap-3 p-3 text-gray-300 hover:bg-gray-700 hover:text-indigo-400 rounded-lg transition duration-200 w-full justify-items-center  pl-[25%] pr-[25%]  "
+            className={`flex   gap-3 p-3 text-gray-300 hover:bg-gray-700 hover:text-indigo-400 rounded-r-3xl transition duration-200 w-full justify-items-center  pl-[25%] pr-[25%] ${isActive(item.to) ? "bg-gray-700 text-indigo-400 border-l-4 border-indigo-600" : ""}`}
             >
             <div className="w-6 flex justify-center ">
               <svg
@@ -50,12 +58,12 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
                 viewBox="0 0 24 24"
                 strokeWidth={1.5}
                 stroke="currentColor"
-                className="size-6"
+                className="size-6 text-green-100"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
               </svg>
             </div>
-            <span className={`${isCollapsed ? "hidden" : "block"} text-sm font-medium`}>
+            <span className={`${isCollapsed ? "hidden" : "block"} text-sm text-green-100 font-medium`}>
               {item.label}
             </span>
           </Link>

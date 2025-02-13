@@ -3,22 +3,17 @@ import React, { useEffect, useState } from "react";
 import { Chart } from "react-google-charts";
 
 const Reports = ({ isCollapsed }) => {
-  const [expiryAlerts, setExpiryAlerts] = useState([]);
+  const [expiringMedicines, setExpiringMedicines] = useState([]);
 
-  // Fetch expiry alerts
-//   useEffect(() => {
-//     const fetchExpiryAlerts = async () => {
-//       try {
-//         const response = await axios.get("/reports/expiry-alerts");
-//         setExpiryAlerts(response.data);
-//       } catch (error) {
-//         console.error("Error fetching expiry alerts:", error);
-//       }
-//     };
-//     fetchExpiryAlerts();
-//   }, []);
-
-  // Sales Data
+  useEffect(() => {
+    axios.get("http://localhost:5010/api/expiry-alerts", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`, // Ensure token is included
+      },
+    })
+      .then((res) => setExpiringMedicines(res.data))
+      .catch((err) => console.error("Error fetching expiry alerts:", err));
+   }, []);
   const salesData = [
     ["Month", "Sales"],
     ["Jan", 1000],
@@ -37,6 +32,7 @@ const Reports = ({ isCollapsed }) => {
           <path d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z"></path>
         </svg>
         <h1 className="text-xl font-bold text-indigo-600  tracking-wide">Reports</h1>
+        
       </div>
 
       {/* Expiry Alerts Section */}
@@ -46,11 +42,11 @@ const Reports = ({ isCollapsed }) => {
             <circle cx="12" cy="12" r="10"></circle>
             <path d="M12 8v4m0 4h.01"></path>
           </svg>
-          <h2 className="text-lg font-semibold uppercase text-gray-800">Expiry Alerts</h2>
+          <h2 className="text-sm font-semibold uppercase text-gray-800">Expiry Alerts</h2>
         </div>
         <ul className="divide-y divide-gray-300">
-          {expiryAlerts.length > 0 ? (
-            expiryAlerts.map((alert) => (
+          {expiringMedicines.length > 0 ? (
+            expiringMedicines.map((alert) => (
               <li key={alert.id} className="py-3 flex items-center justify-between">
                 <span className="font-medium text-gray-700">{alert.name}</span>
                 <span className="text-sm text-red-600 font-semibold bg-red-100 px-3 py-1 rounded-lg">
@@ -78,7 +74,7 @@ const Reports = ({ isCollapsed }) => {
             <path d="M18 17l2-2-2-2"></path>
             <path d="M14 7l4 4-4 4"></path>
           </svg>
-          <h2 className="text-lg font-semibold uppercase text-gray-800">Monthly Sales</h2>
+          <h2 className="text-sm font-semibold uppercase text-gray-800">Monthly Sales</h2>
         </div>
         <Chart
           width="100%"
