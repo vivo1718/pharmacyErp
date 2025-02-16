@@ -53,7 +53,7 @@ const Inventory = ({ isCollapsed }) => {
   
 
   return (
-    <div className={`${isCollapsed ? "ml-20" : "ml-64"} p-6  min-h-screen font-sans`}>
+    <div className={`${isCollapsed ? "ml-25" : "ml-64"} p-6  min-h-screen font-sans`}>
       {/* Header with SVG Icon */}
       {expiringMedicines.length > 0 && (
         <div className="bg-amber-500 text-white p-4 rounded-lg mb-4 shadow-lg">
@@ -121,15 +121,15 @@ const Inventory = ({ isCollapsed }) => {
           {/* Table Headings */}
           <thead className="bg-indigo-600 text-white">
             <tr >
-              <th className="px-6 py-3 text-left">Name</th>
-              <th className="px-6 py-3 text-left">Batch</th>
-              <th className="px-6 py-3 text-left">Expiry</th>
-              <th className="px-6 py-3 text-left">Stock</th>
+              <th className="px-6 py-3 text-center">Name</th>
+              <th className="px-6 py-3 text-center">Batch</th>
+              <th className="px-6 py-3 text-center">Expiry</th>
+              <th className="px-6 py-3 text-center">Stock</th>
             </tr>
           </thead>
 
           {/* Table Body */}
-          <tbody className="text-gray-800 font-bold">
+          <tbody className="text-gray-800  font-bold">
   {filteredMedicines.length > 0 ? (
     filteredMedicines.map((medicine, index) => {
       const expiryDate = medicine.expiryDate ? new Date(medicine.expiryDate) : null;
@@ -144,17 +144,17 @@ const Inventory = ({ isCollapsed }) => {
         <tr
           key={medicine.id || index}
           onClick={() => handleSelectMedicine(medicine)}
-          className={`text-center text-sm cursor-pointer transition-all duration-200 ${
+          className={`text-center text-sm cursor-pointer  transition-all duration-200 ${
             isExpired
               ? "bg-red-300 text-red-600" // Expired: Light red with dark red text
               : isNearExpiry
               ? "bg-yellow-100 text-yellow-700" // Near Expiry: Light yellow with dark yellow text
               : index % 2 === 0
-              ? "bg-indigo-100 hover:bg-indigo-200"
+              ? "bg-indigo-50 hover:bg-indigo-100"
               : "bg-white hover:bg-gray-200"
           }`}
         >
-          <td className="px-6 py-4 text-gray-800">{medicine.name || "N/A"}</td>
+          <td className="px-6 py-4 text-gray-800 ">{medicine.name || "N/A"}</td>
           <td className="px-6 py-4 text-gray-800">{medicine.batchNumber || "N/A"}</td>
           <td className="px-6 py-4 text-gray-800">
             {expiryDate ? expiryDate.toLocaleDateString() : "N/A"}

@@ -32,12 +32,12 @@ const navigate = useNavigate();
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-          <button type="submit" className="w-full mt-4 bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700">
+          <button type="submit" className="w-full mt-4 bg-indigo-600 text-white py-2 rounded-md hover:bg-blue-700">
             Reset Password
           </button>
         </form>
         {message && <p className="text-center mt-4 text-green-600">{message}</p>}
-        <p className=" justify-center align-middle text-center mt-2 text-gray-700 hover:bg-blue-200 p-2 rounded-xl" onClick={goToLogin}>Back to Login</p>
+        <p className=" justify-center align-middle text-center mt-2 text-gray-700 hover:bg-blue-200 p-2 rounded-xl cursor-pointer" onClick={goToLogin}>Back to Login</p>
       </div>
     </div>
   );

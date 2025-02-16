@@ -26,7 +26,7 @@ useEffect(() => {
   }, []);
 
   return (
-<div className={`${isCollapsed ? "ml-20" : "ml-64"} p-6 bg-gray-100 min-h-screen`}>
+<div className={`${isCollapsed ? "ml-25" : "ml-64"} p-6 min-h-screen`}>
 {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-xl font-bold text-indigo-500 flex items-center">

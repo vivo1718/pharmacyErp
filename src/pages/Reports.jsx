@@ -24,7 +24,7 @@ const Reports = ({ isCollapsed }) => {
   ];
 
   return (
-    <div className={`${isCollapsed ? "ml-20" : "ml-64"} p-6 bg-gradient-to-br from-indigo-50 to-indigo-100 min-h-screen font-sans`}>
+    <div className={`${isCollapsed ? "ml-25" : "ml-64"} p-6 bg-gradient-to-br  min-h-screen font-sans`}>
 
       {/* Reports Header */}
       <div className="flex items-center mb-6">

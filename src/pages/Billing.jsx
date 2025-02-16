@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import Swal from 'sweetalert2';
+
 import axios from "axios";
 const Billing = ({ isCollapsed }) => {
   const location = useLocation();
@@ -37,18 +39,45 @@ const Billing = ({ isCollapsed }) => {
     }
   };
   const deleteInvoice = (invoiceId) => {
-    if (!window.confirm("Are you sure you want to delete this invoice?")) return;
-
-    fetch(`http://localhost:5010/api/invoices/${invoiceId}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => res.json())
-      .then(() => {
-        alert("Invoice deleted successfully!");
-        fetchInvoices(); // Refresh the invoice list
-      })
-      .catch((error) => console.error("Error:", error));
+    // Use SweetAlert2 to show a confirmation dialog
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "Do you want to delete this invoice?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch(`http://localhost:5010/api/invoices/${invoiceId}`, {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        })
+          .then((res) => res.json())
+          .then(() => {
+            // Show a success message when the invoice is deleted
+            Swal.fire({
+              title: 'Deleted!',
+              text: 'Invoice deleted successfully!',
+              icon: 'success',
+              confirmButtonText: 'OK'
+            });
+            fetchInvoices(); // Refresh the invoice list
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            Swal.fire({
+              title: 'Error!',
+              text: 'There was an error deleting the invoice.',
+              icon: 'error',
+              confirmButtonText: 'OK'
+              
+            });
+          });
+      }
+    });
   };
 
   const calculateTotal = (quantity, price, tax, discount) => {
@@ -263,7 +292,7 @@ const Billing = ({ isCollapsed }) => {
   };
 
   return (
-    <div className={`${isCollapsed ? "ml-20" : "ml-64"} p-6`}>
+    <div className={`${isCollapsed ? "ml-25" : "ml-64"} p-6`}>
       {/* Invoice Generation Form */}
       <div className="bg-white shadow-lg rounded-xl p-6 mb-8 border border-gray-200">
       <h2 className="text-2xl font-semibold mb-5 text-indigo-600 flex items-center">
@@ -333,7 +362,7 @@ const Billing = ({ isCollapsed }) => {
 
       <button
         onClick={handleGenerateInvoice}
-        className="bg-gradient-to-r from-indigo-500 to-blue-600 text-white px-6 py-3 rounded-lg flex items-center justify-center w-full hover:shadow-md transition-all"
+        className="bg-gradient-to-r from-indigo-500 cursor-pointer to-blue-600 text-white px-6 py-3 rounded-lg flex items-center justify-center w-full hover:shadow-md transition-all"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
